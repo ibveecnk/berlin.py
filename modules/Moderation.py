@@ -1,5 +1,4 @@
 from asyncio import sleep
-from http.client import HTTPException
 import discord
 from discord.ext import commands
 
@@ -32,7 +31,7 @@ class Moderation(commands.Cog):
         async with ctx.typing():
             await member.ban(reason=reason)
             await ctx.send(f'Banned {member.mention} for {reason}.')
-    
+
     @commands.hybrid_command()
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)

@@ -13,6 +13,7 @@ class Maintenance(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.bot.logger.info(f'Bot is logged in as {self.bot.user}')
+        await self.bot.change_presence(activity=discord.Game(name="!help"))
         await sync_command_tree(self.bot)
 
     @commands.Cog.listener()
@@ -27,6 +28,9 @@ class Maintenance(commands.Cog):
             await ctx.send(f"This command is on cooldown. Try again in {error.retry_after:.2f} seconds.")
         elif isinstance(error, commands.CommandInvokeError):
             await ctx.send("An error occurred while running this command.")
+            self.bot.logger.error(
+                f'An error occurred while running command {ctx.command.name}: {error.original}')
+            raise error
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.send("This command can only be used in a server.")
         elif isinstance(error, commands.DisabledCommand):
@@ -103,10 +107,12 @@ async def reload_extensions(bot, modules):
     await sync_command_tree(bot)
     return reloaded
 
+
 async def sync_command_tree(bot):
     bot.logger.info('Syncing command tree...')
-    await bot.tree.sync();
+    await bot.tree.sync()
     bot.logger.info('Command tree synced.')
+
 
 async def setup(bot):
     await bot.add_cog(Maintenance(bot))
