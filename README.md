@@ -42,4 +42,5 @@ python main.py
 ## Planned features
 - [x] automatic reloading of modules (reload command)
 - [ ] docker image for easy deploying
-- [ ] music features
+- [x] music features
+- [ ] music queue
