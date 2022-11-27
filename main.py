@@ -1,3 +1,4 @@
+from dis import disco
 import os
 import discord
 from discord.ext.commands import Bot
@@ -7,6 +8,7 @@ import logging.handlers
 from dotenv import load_dotenv
 from pathlib import Path
 import asyncio
+from Helpers import HelpEmbed
 
 
 async def main():
@@ -41,7 +43,8 @@ async def main():
     # subscribe to intents
     intents = discord.Intents.default()
     intents.message_content = True
-    bot = Bot(command_prefix=commands.when_mentioned_or("!"), intents=intents)
+    bot = Bot(command_prefix=commands.when_mentioned_or("!"),
+              intents=intents, help_command=HelpEmbed.Help())
     bot.logger = logger
 
     async with bot:
