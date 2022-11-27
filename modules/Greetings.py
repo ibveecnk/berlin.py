@@ -15,6 +15,8 @@ class Greetings(commands.Cog):
             await channel.send(f'Welcome to {member.guild.name} with {member.guild.member_count} members, {member.mention}.')
 
     @commands.command()
+    @commands.guild_only()
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def hello(self, ctx, *, member: discord.Member = None):
         """Says hello, mainly there for testing purposes"""
         member = member or ctx.author

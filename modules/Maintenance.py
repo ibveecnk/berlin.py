@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands
 from pathlib import Path
 import os
-from discord.ext.commands.errors import CommandNotFound
 
 
 class Maintenance(commands.Cog):
@@ -17,11 +16,26 @@ class Maintenance(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        # ignore command not found errors, because these are caused by a command
-        # simply not existing, where we shall do nothing
-        if isinstance(error, CommandNotFound):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send("You don't have the required permissions to run this command.")
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("You are missing a required argument.")
+        elif isinstance(error, commands.BadArgument):
+            await ctx.send("You have provided an invalid argument.")
+        elif isinstance(error, commands.CommandOnCooldown):
+            await ctx.send(f"This command is on cooldown. Try again in {error.retry_after:.2f} seconds.")
+        elif isinstance(error, commands.CommandInvokeError):
+            await ctx.send("An error occurred while running this command.")
+        elif isinstance(error, commands.NoPrivateMessage):
+            await ctx.send("This command can only be used in a server.")
+        elif isinstance(error, commands.DisabledCommand):
+            await ctx.send("This command is currently disabled.")
+        elif isinstance(error, commands.CheckFailure):
+            await ctx.send("You do not have permission to run this command.")
+        elif isinstance(error, commands.CommandNotFound):
             return
-        raise error
+        else:
+            raise error
 
     @commands.command()
     @commands.is_owner()
