@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 from pathlib import Path
 import os
+from discord.ext.commands.errors import CommandNotFound
 
 
 class Maintenance(commands.Cog):
@@ -13,6 +14,14 @@ class Maintenance(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.bot.logger.info(f'Bot is logged in as {self.bot.user}')
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        # ignore command not found errors, because these are caused by a command
+        # simply not existing, where we shall do nothing
+        if isinstance(error, CommandNotFound):
+            return
+        raise error
 
     @commands.command()
     @commands.is_owner()
