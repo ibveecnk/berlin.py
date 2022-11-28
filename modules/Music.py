@@ -1,12 +1,14 @@
 import asyncio
 import itertools
+from lib2to3.pytree import Base
 import random
 import sys
 import traceback
 import discord
 import youtube_dl as ytdl
 from discord.ext import commands
-import Helpers.Music.MusicPlayer as MusicPlayer
+from Helpers.Embed.BaseEmbed import BaseEmbed
+from Helpers.Music import MusicPlayer
 
 from Helpers.Music.PlayerSource import PlayerSource
 
@@ -123,17 +125,17 @@ class Music(commands.Cog):
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            embed = discord.Embed(
-                title="", description="I'm not connected to a voice channel", color=discord.Color.green())
+            embed = BaseEmbed(
+                ctx, title="Error", description="I am not currently connected to voice")
             return await ctx.send(embed=embed)
 
         player = self.get_player(ctx)
         if not player.current:
-            embed = discord.Embed(
-                title="", description="I am currently not playing anything", color=discord.Color.green())
+            embed = BaseEmbed(ctx, title="Nothing playing",
+                              description="I am currently not playing anything")
             return await ctx.send(embed=embed)
 
-        # datetimeformat
+        # Format the time
         seconds = vc.source.duration % (24 * 3600)
         hour = seconds // 3600
         seconds %= 3600
@@ -144,10 +146,12 @@ class Music(commands.Cog):
         else:
             duration = "%02dm %02ds" % (minutes, seconds)
 
-        embed = discord.Embed(
-            title="", description=f"[{vc.source.title}]({vc.source.web_url}) [{vc.source.requester.mention}] | `{duration}`", color=discord.Color.green())
-        embed.set_author(icon_url=self.bot.user.avatar.url,
-                         name=f"Now Playing 🎶")
+        embed = BaseEmbed(
+            ctx, title="Now Playing", description=f"**[{vc.source.title}]({vc.source.web_url})**")
+        embed.add_field(name="Duration", value=f"{duration}", inline=False)
+        embed.add_field(name="Requester",
+                        value=f"{vc.source.requester}", inline=False)
+        embed.set_thumbnail(url=vc.source.thumbnail)
         await ctx.send(embed=embed)
 
     @commands.hybrid_command(aliases=["q"])
@@ -183,17 +187,19 @@ class Music(commands.Cog):
 
         plural_s = "s" if len(upcoming) > 1 else ""
 
-        fmt = '\n'.join(
-            f"`{(upcoming.index(_)) + 1}.` [{_['title']}]({_['webpage_url']}) | ` {duration} Requested by: {_['requester']}`\n" for _ in upcoming)
-        fmt = f"\n__Now Playing__:\n[{vc.source.title}]({vc.source.web_url}) | ` {duration} Requested by: {vc.source.requester}`\n\n__Up Next:__\n" + \
-            fmt + f"\n**{len(upcoming)} song{plural_s} in queue**"
-        embed = discord.Embed(
-            title=f'Queue for {ctx.guild.name}', description=fmt, color=discord.Color.green())
+        embed = BaseEmbed(ctx, title="Upcoming Song" + plural_s)
 
+        for i, song in enumerate(upcoming):
+            if (i > 9):
+                embed.add_field(
+                    name=f"And {len(upcoming) - i} more...", value=None)
+                break
+            embed.add_field(name=f"{i+1}. {song['title']}",
+                            value=f"Duration: {duration}, Requester: {song['requester']}, [link]({song['webpage_url']})", inline=False)
         await ctx.send(embed=embed)
 
-    @commands.hybrid_command(aliases=["l"])
-    @commands.guild_only()
+    @ commands.hybrid_command(aliases=["l"])
+    @ commands.guild_only()
     async def leave(self, ctx: commands.Context):
         """Stop the currently playing song and destroy the player.
         !Warning!
@@ -212,8 +218,8 @@ class Music(commands.Cog):
 
         await self.cleanup(ctx.guild)
 
-    @commands.hybrid_command(aliases=["s"])
-    @commands.guild_only()
+    @ commands.hybrid_command(aliases=["s"])
+    @ commands.guild_only()
     async def skip(self, ctx: commands.Context):
         """Skip the song."""
         vc: discord.VoiceClient = ctx.voice_client

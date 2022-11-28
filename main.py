@@ -38,11 +38,12 @@ async def main():
     # Load token from .env
     load_dotenv()
     TOKEN = os.getenv('TOKEN')
+    PREFIX = os.getenv('PREFIX') or '!'
 
     # subscribe to intents
     intents = discord.Intents.default()
     intents.message_content = True
-    bot = Bot(command_prefix=commands.when_mentioned_or("!"),
+    bot = Bot(command_prefix=commands.when_mentioned_or(PREFIX),
               intents=intents, help_command=HelpEmbed.Help())
     bot.logger = logger
 

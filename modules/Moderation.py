@@ -2,6 +2,8 @@ from asyncio import sleep
 import discord
 from discord.ext import commands
 
+from Helpers.Embed.BaseEmbed import BaseEmbed
+
 
 class Moderation(commands.Cog):
     def __init__(self, bot):
@@ -12,7 +14,9 @@ class Moderation(commands.Cog):
     async def on_member_join(self, member: discord.Member):
         channel = member.guild.system_channel
         if channel is not None:
-            await channel.send(f'Welcome to {member.guild.name} with {member.guild.member_count} members, {member.mention}.')
+            embed = BaseEmbed(None)
+            embed.description = f'Welcome to {member.guild.name} with {member.guild.member_count} members, {member.mention}.'
+            await channel.send(embed)
 
     @commands.hybrid_command()
     @commands.guild_only()
@@ -21,7 +25,10 @@ class Moderation(commands.Cog):
         """Kicks a member from the server."""
         async with ctx.typing():
             await member.kick(reason=reason)
-            await ctx.send(f'Kicked {member.mention} for {reason}.')
+            embed = BaseEmbed(ctx)
+            embed.description = f'{member.mention} has been kicked from the server.'
+            embed.add_field(name="Reason", value=reason)
+            await ctx.send(embed=embed)
 
     @commands.hybrid_command()
     @commands.guild_only()
@@ -30,7 +37,10 @@ class Moderation(commands.Cog):
         """Bans a member from the server."""
         async with ctx.typing():
             await member.ban(reason=reason)
-            await ctx.send(f'Banned {member.mention} for {reason}.')
+            embed = BaseEmbed(ctx)
+            embed.description = f'{member.mention} has been banned from the server.'
+            embed.add_field(name="Reason", value=reason)
+            await ctx.send(embed=embed)
 
     @commands.hybrid_command()
     @commands.guild_only()
@@ -46,8 +56,9 @@ class Moderation(commands.Cog):
 
                 if (user.name, user.discriminator) == (member_name, member_discriminator):
                     await ctx.guild.unban(user)
-                    await ctx.send(f'Unbanned {user.mention}.')
-                    return
+                    embed = BaseEmbed(ctx)
+                    embed.description = f'{user.mention} has been unbanned from the server.'
+                    await ctx.send(embed=embed)
 
     @commands.hybrid_command()
     @commands.guild_only()
@@ -59,7 +70,9 @@ class Moderation(commands.Cog):
             async for message in ctx.message.channel.history(limit=limit+1):
                 await message.delete()
                 await sleep(0.5)
-            await ctx.send(f'Cleared {limit} messages.')
+            embed = BaseEmbed(ctx)
+            embed.description = f'{limit} messages have been cleared.'
+            await ctx.send(embed=embed)
 
     @commands.hybrid_command()
     @commands.guild_only()
@@ -67,8 +80,14 @@ class Moderation(commands.Cog):
     async def warn(self, ctx: commands.Context, member: discord.Member, *, reason):
         """Warns a member."""
         async with ctx.typing():
-            await ctx.send(f'Warned {member.mention} for {reason}.')
-            await member.send(f'```You were warned in server {ctx.guild.name}\n\nReason: {reason}.```')
+            embed = BaseEmbed(ctx)
+            embed.description = f'{member.mention} has been warned.'
+            embed.add_field(name="Reason", value=reason)
+            await ctx.send(embed=embed)
+
+            # Recycling :)
+            embed.description = f'You have been warned in {ctx.guild.name}.'
+            await member.send(embed=embed)
 
 
 async def setup(bot):

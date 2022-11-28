@@ -4,6 +4,8 @@ from functools import partial
 import discord
 import youtube_dl
 
+from Helpers.Embed.BaseEmbed import BaseEmbed
+
 ytdl_format_options = {
     'format': 'bestaudio/best',
     'outtmpl': 'cache/%(extractor)s-%(id)s-%(title)s.%(ext)s',
@@ -37,6 +39,7 @@ class PlayerSource(discord.PCMVolumeTransformer):
         self.requester = requester
 
         self.title = data.get('title')
+        self.thumbnail = data.get('thumbnail')
         self.web_url = data.get('webpage_url')
         self.duration = data.get('duration')
 
@@ -57,8 +60,10 @@ class PlayerSource(discord.PCMVolumeTransformer):
             # take first item from a playlist
             data = data['entries'][0]
 
-        embed = discord.Embed(
-            title="", description=f"Queued [{data['title']}]({data['webpage_url']}) [{ctx.author.mention}]", color=discord.Color.green())
+        web_url = data['webpage_url']
+
+        embed = BaseEmbed(None,
+                          title="", description=f"Queued [{data['title']}]({data['webpage_url']}) [{ctx.author.mention}]")
         await ctx.send(embed=embed)
 
         if download:
@@ -74,6 +79,7 @@ class PlayerSource(discord.PCMVolumeTransformer):
         Since Youtube Streaming links expire."""
         loop = loop or asyncio.get_event_loop()
         requester = data['requester']
+        web_url = data['webpage_url']
 
         to_run = partial(ytdl.extract_info,
                          url=data['webpage_url'], download=False)

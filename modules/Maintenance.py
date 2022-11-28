@@ -13,7 +13,7 @@ class Maintenance(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.bot.logger.info(f'Bot is logged in as {self.bot.user}')
-        await self.bot.change_presence(activity=discord.Game(name="!help"))
+        await self.bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Streaming(name=f"{len(self.bot.guilds)} guilds.", url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"))
         await sync_command_tree(self.bot)
 
     @commands.Cog.listener()
