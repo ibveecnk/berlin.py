@@ -20,30 +20,6 @@ class Moderation(commands.Cog):
 
     @commands.hybrid_command()
     @commands.guild_only()
-    @commands.has_permissions(kick_members=True)
-    async def kick(self, ctx: commands.Context, member: discord.Member, *, reason="no reason"):
-        """Kicks a member from the server."""
-        async with ctx.typing():
-            await member.kick(reason=reason)
-            embed = BaseEmbed(ctx)
-            embed.description = f'{member.mention} has been kicked from the server.'
-            embed.add_field(name="Reason", value=reason)
-            await ctx.send(embed=embed)
-
-    @commands.hybrid_command()
-    @commands.guild_only()
-    @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx: commands.Context, member: discord.Member, *, reason="no reason"):
-        """Bans a member from the server."""
-        async with ctx.typing():
-            await member.ban(reason=reason)
-            embed = BaseEmbed(ctx)
-            embed.description = f'{member.mention} has been banned from the server.'
-            embed.add_field(name="Reason", value=reason)
-            await ctx.send(embed=embed)
-
-    @commands.hybrid_command()
-    @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx: commands.Context, *, member):
         """Unbans a member from the server."""
@@ -69,7 +45,7 @@ class Moderation(commands.Cog):
             limit = amount < 100 and amount or 100
             async for message in ctx.message.channel.history(limit=limit+1):
                 await message.delete()
-                await sleep(0.5)
+                await sleep(1)
             embed = BaseEmbed(ctx)
             embed.description = f'{limit} messages have been cleared.'
             await ctx.send(embed=embed)
@@ -88,6 +64,13 @@ class Moderation(commands.Cog):
             # Recycling :)
             embed.description = f'You have been warned in {ctx.guild.name}.'
             await member.send(embed=embed)
+
+    @commands.hybrid_command()
+    @commands.has_permissions(manage_channels=True)
+    async def nuke(self, ctx: commands.Context):
+        newChannel = await ctx.channel.clone(reason="Has been nuked")
+        await ctx.channel.delete()
+        await newChannel.send(f"This channel has been nuked by {ctx.author.mention}.")
 
 
 async def setup(bot):
