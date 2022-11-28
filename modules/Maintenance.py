@@ -28,6 +28,7 @@ class Maintenance(commands.Cog):
             await ctx.send(f"This command is on cooldown. Try again in {error.retry_after:.2f} seconds.")
         elif isinstance(error, commands.CommandInvokeError):
             await ctx.send("An error occurred while running this command.")
+            await ctx.send(f"```python\n{error}```")
             self.bot.logger.error(
                 f'An error occurred while running command {ctx.command.name}: {error.original}')
             raise error
