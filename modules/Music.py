@@ -94,19 +94,11 @@ class Music(commands.Cog):
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            embed = discord.Embed(
-                title="", description="I am not currently connected to voice", color=discord.Color.green())
+            embed = BaseEmbed(ctx,
+                              title="", description="I am not currently connected to voice")
             return await ctx.send(embed=embed)
 
-        if not vol:
-            embed = discord.Embed(
-                title="", description=f"🔊 **{(vc.source.volume)*100}%**", color=discord.Color.green())
-            return await ctx.send(embed=embed)
-
-        if not 0 < vol < 101:
-            embed = discord.Embed(
-                title="", description="Please enter a value between 1 and 100", color=discord.Color.green())
-            return await ctx.send(embed=embed)
+        vol = max(min(vol, 100), 0)
 
         player = self.get_player(ctx)
 
@@ -114,8 +106,9 @@ class Music(commands.Cog):
             vc.source.volume = vol / 100
 
         player.volume = vol / 100
-        embed = discord.Embed(
-            title="", description=f'**`{ctx.author}`** set the volume to **{vol}%**', color=discord.Color.green())
+
+        embed = BaseEmbed(ctx,
+                          title="", description=f'**`{ctx.author}`** set the volume to **{vol}%**')
         await ctx.send(embed=embed)
 
     @commands.hybrid_command(aliases=["np"])
@@ -161,14 +154,14 @@ class Music(commands.Cog):
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            embed = discord.Embed(
-                title="", description="I'm not connected to a voice channel", color=discord.Color.green())
+            embed = BaseEmbed(ctx,
+                              title="", description="I'm not connected to a voice channel")
             return await ctx.send(embed=embed)
 
         player = self.get_player(ctx)
         if player.queue.empty():
-            embed = discord.Embed(
-                title="", description="queue is empty", color=discord.Color.green())
+            embed = BaseEmbed(ctx,
+                              title="", description="queue is empty")
             return await ctx.send(embed=embed)
 
         seconds = vc.source.duration % (24 * 3600)
@@ -205,8 +198,8 @@ class Music(commands.Cog):
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            embed = discord.Embed(
-                title="", description="I'm not connected to a voice channel", color=discord.Color.green())
+            embed = BaseEmbed(ctx,
+                              title="", description="I'm not connected to a voice channel")
             return await ctx.send(embed=embed)
 
         if (random.randint(0, 1) == 0):
@@ -223,8 +216,8 @@ class Music(commands.Cog):
 
         async with ctx.typing():
             if not vc or not vc.is_connected():
-                embed = discord.Embed(
-                    title="", description="I'm not connected to a voice channel", color=discord.Color.green())
+                embed = BaseEmbed(ctx,
+                                  title="", description="I'm not connected to a voice channel")
                 return await ctx.send(embed=embed)
 
             self.get_player(ctx).current.cleanup()

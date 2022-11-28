@@ -3,6 +3,7 @@ import discord
 import youtube_dl as ytdl
 from discord.ext import commands
 from async_timeout import timeout
+from Helpers.Embed.BaseEmbed import BaseEmbed
 
 from Helpers.Music.PlayerSource import PlayerSource
 
@@ -55,12 +56,11 @@ class MusicPlayer:
 
             self._guild.voice_client.play(
                 source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
-            embed = discord.Embed(
-                title="Now playing", description=f"[{source.title}]({source.web_url}) [{source.requester.mention}]", color=discord.Color.green())
+            embed = BaseEmbed(None, self.bot,
+                              title="Now playing", description=f"[{source.title}]({source.web_url}) [{source.requester.mention}]", color=discord.Color.green())
             self.np = await self._channel.send(embed=embed)
             await self.next.wait()
 
-            print("Song done playing...")
             # Make sure the FFmpeg process is cleaned up.
             source.cleanup()
             self.current = None

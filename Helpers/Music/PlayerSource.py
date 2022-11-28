@@ -37,7 +37,6 @@ class PlayerSource(discord.PCMVolumeTransformer):
     def __init__(self, source, *, data, requester):
         super().__init__(source)
         self.requester = requester
-
         self.title = data.get('title')
         self.thumbnail = data.get('thumbnail')
         self.web_url = data.get('webpage_url')
@@ -62,7 +61,7 @@ class PlayerSource(discord.PCMVolumeTransformer):
 
         web_url = data['webpage_url']
 
-        embed = BaseEmbed(None,
+        embed = BaseEmbed(ctx,
                           title="", description=f"Queued [{data['title']}]({data['webpage_url']}) [{ctx.author.mention}]")
         await ctx.send(embed=embed)
 
