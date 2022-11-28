@@ -201,10 +201,7 @@ class Music(commands.Cog):
     @ commands.hybrid_command(aliases=["l"])
     @ commands.guild_only()
     async def leave(self, ctx: commands.Context):
-        """Stop the currently playing song and destroy the player.
-        !Warning!
-            This will destroy the player assigned to your guild, also deleting any queued songs and settings.
-        """
+        """Stop the currently playing song and destroy the player."""
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():

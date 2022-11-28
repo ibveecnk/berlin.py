@@ -68,6 +68,8 @@ class Moderation(commands.Cog):
     @commands.hybrid_command()
     @commands.has_permissions(manage_channels=True)
     async def nuke(self, ctx: commands.Context):
+        """Creates a new channel with the same name and settings and deletes the old one.
+        Effecively deleting all messages in the channel."""
         newChannel = await ctx.channel.clone(reason="Has been nuked")
         await ctx.channel.delete()
         await newChannel.send(f"This channel has been nuked by {ctx.author.mention}.")
