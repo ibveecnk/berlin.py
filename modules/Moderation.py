@@ -38,6 +38,17 @@ class Moderation(commands.Cog):
 
     @commands.hybrid_command()
     @commands.guild_only()
+    @commands.has_permissions(manage_permissions=True)
+    async def adduser(self, ctx: commands.Context, member: discord.Member, channel: discord.abc.GuildChannel):
+        """Adds a member to a specified channel."""
+        async with ctx.typing():
+            await channel.set_permissions(member, read_messages=True, send_messages=True, connect=True)
+            embed = BaseEmbed(ctx)
+            embed.description = f'{member.mention} has been added to the channel.'
+            await ctx.send(embed=embed)
+
+    @commands.hybrid_command()
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx: commands.Context, amount=5):
         """Clears the specified amount of messages."""
