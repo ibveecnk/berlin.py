@@ -46,6 +46,8 @@ class Moderation(commands.Cog):
             embed = BaseEmbed(ctx)
             embed.description = f'{member.mention} has been added to the channel.'
             await ctx.send(embed=embed)
+            if (channel.type == discord.ChannelType.text):
+                await channel.send(f'{member.mention} has been added to the channel.')
 
     @commands.hybrid_command()
     @commands.guild_only()
