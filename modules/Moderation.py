@@ -44,7 +44,7 @@ class Moderation(commands.Cog):
         async with ctx.typing():
             await channel.set_permissions(member, read_messages=True, send_messages=True, connect=True)
             embed = BaseEmbed(ctx)
-            embed.description = f'{member.mention} has been added to the channel.'
+            embed.description = f'{member.mention} has been added to {channel.mention}.'
             await ctx.send(embed=embed)
             if (channel.type == discord.ChannelType.text):
                 await channel.send(f'{member.mention} has been added to the channel.')
