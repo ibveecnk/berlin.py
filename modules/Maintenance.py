@@ -59,9 +59,12 @@ class Maintenance(commands.Cog):
             cpu_architecture = os.uname().machine
             mem = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')
             timediff = (datetime.datetime.now() - self.bot.start_time)
-            t_days, t_hours = divmod(timediff.seconds, 86400)
-            t_hours, t_minutes = divmod(t_hours, 60)
-            t_minutes, t_seconds = divmod(t_minutes, 60)
+            # convert seconds to days, hours, minutes, seconds
+            days = timediff.days
+            hours = timediff.seconds // 3600
+            minutes = (timediff.seconds // 60) % 60
+            seconds = timediff.seconds % 60
+            uptime = f"{days} d, {hours} h, {minutes} min, {seconds} s"
 
             embed = discord.Embed(title="System Information", color=0x00ff00)
             embed.add_field(name="Operating System",
@@ -73,7 +76,7 @@ class Maintenance(commands.Cog):
             embed.add_field(name="Used Disk Space",
                             value=f"{used // (2**30)} GB / {total // (2**30)} GB", inline=False)
             embed.add_field(
-                name="Uptime", value=f"{str(t_days)}d, {str(t_hours).zfill(2)}:{str(t_minutes).zfill(2)}:{str(t_seconds).zfill(2)}", inline=False)
+                name="Uptime", value=uptime, inline=False)
             await ctx.send(embed=embed)
 
     @commands.hybrid_command()
