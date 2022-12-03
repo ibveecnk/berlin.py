@@ -1,4 +1,6 @@
+from datetime import datetime
 import os
+import datetime
 import discord
 from discord.ext.commands import Bot
 from discord.ext import commands
@@ -46,6 +48,7 @@ async def main():
     bot = Bot(command_prefix=commands.when_mentioned_or(PREFIX),
               intents=intents, help_command=HelpEmbed.Help())
     bot.logger = logger
+    bot.start_time = datetime.datetime.now()
 
     async with bot:
         await load_extenions()
