@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:bullseye
 
 # Download latest listing of available packages:
 RUN apt-get -y update
