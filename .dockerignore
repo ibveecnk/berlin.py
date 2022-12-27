@@ -1,0 +1,5 @@
+discord.log
+.env.dist
+.env
+cache/
+README.md
